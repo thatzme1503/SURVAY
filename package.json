@@ -1,0 +1,33 @@
+{
+  "name": "form-automation-system",
+  "version": "1.0.0",
+  "description": "Automated web form filling system with proxy rotation and dynamic data generation",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "node index.js",
+    "test": "node index.js once",
+    "data": "node data-cli.js",
+    "data-server": "node data-server.js",
+    "web": "node data-server.js"
+  },
+  "keywords": [
+    "automation",
+    "forms",
+    "proxy",
+    "headless-browser"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "@faker-js/faker": "^10.6.0",
+    "axios": "^1.5.0",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "node-cron": "^4.6.0",
+    "proxy-agent": "^6.3.0",
+    "puppeteer": "^25.12.0",
+    "puppeteer-extra": "^3.3.0",
+    "puppeteer-extra-plugin-stealth": "^2.11.0"
+  }
+}

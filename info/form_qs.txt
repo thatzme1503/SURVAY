@@ -1,0 +1,113 @@
+{
+  "transactionId": 21,
+  "page": {
+    "layout": {
+      "footer": "<span style=\"font-size:13px;\">Store Number: 2705408</span>"
+    },
+    "completion": 98,
+    "content": {
+      "type": "questions",
+      "questions": [
+        {
+          "type": "db",
+          "id": "QID91",
+          "display": "By submitting my cell phone number, I agree to participate in the “Talk 2 Us Sweepstakes” organized by Circle K Stores Inc. and I confirm that I have read and understood the contest rules available at: <a target=\"_blank\" href=\"http://CircleK.com/Talk2Us\" rel=\"noopener\">CircleK.com/Talk2Us</a>. I also understand that I am providing Circle K Stores Inc. with express consent to receive text messages in response to my participation. Text message and data rates apply. For our privacy policy:&nbsp;<a target=\"_blank\" href=\"https://www.circlek.com/privacy-policy\" rel=\"noopener\">https://www.circlek.com/privacy-policy</a>.",
+          "options": {
+            "customJS": {
+              "script": "",
+              "questionInfo": {
+                "QuestionType": "DB",
+                "QuestionID": "QID91",
+                "QuestionText": "By submitting my cell phone number, I agree to participate in the “Talk 2 Us Sweepstakes” organized by Circle K Stores Inc. and I confirm that I have read and understood the contest rules available at: <a target=\"_blank\" href=\"http://CircleK.com/Talk2Us\" rel=\"noopener\">CircleK.com/Talk2Us</a>. I also understand that I am providing Circle K Stores Inc. with express consent to receive text messages in response to my participation. Text message and data rates apply. For our privacy policy:&nbsp;<a target=\"_blank\" href=\"https://www.circlek.com/privacy-policy\" rel=\"noopener\">https://www.circlek.com/privacy-policy</a>.",
+                "Selector": "TB",
+                "SubSelector": null,
+                "postTag": "QID91",
+                "Validation": {
+                  "Settings": {
+                    "Type": "None"
+                  }
+                }
+              }
+            }
+          },
+          "layout": {}
+        },
+        {
+          "id": "QID79",
+          "display": "Please enter your email address if you would like to be entered into a sweepstakes for a chance to win a $100 Circle K gift card.",
+          "options": {
+            "customJS": {
+              "script": "",
+              "questionInfo": {
+                "QuestionType": "TE",
+                "QuestionID": "QID79",
+                "QuestionText": "Please enter your email address if you would like to be entered into a sweepstakes for a chance to win a $100 Circle K gift card.",
+                "Selector": "FORM",
+                "SubSelector": null,
+                "postTag": "QID79",
+                "Validation": {
+                  "Settings": {
+                    "Type": "None"
+                  }
+                },
+                "Choices": {
+                  "1": {
+                    "Text": "Email",
+                    "RecodeValue": "1",
+                    "VariableName": "1",
+                    "Exclusive": false,
+                    "Validation": {
+                      "TextEntryValidation": "ValidEmail"
+                    }
+                  },
+                  "2": {
+                    "Text": "Phone",
+                    "RecodeValue": "2",
+                    "VariableName": "2",
+                    "Exclusive": false,
+                    "Validation": {
+                      "TextEntryValidation": "USPhone"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "layout": {},
+          "type": "form",
+          "choices": [
+            {
+              "id": "1",
+              "display": "Email",
+              "options": {
+                "textEntry": {}
+              },
+              "layout": {}
+            },
+            {
+              "id": "2",
+              "display": "Phone",
+              "options": {
+                "textEntry": {}
+              },
+              "layout": {}
+            }
+          ]
+        }
+      ],
+      "responses": {}
+    },
+    "translationUnavailable": false,
+    "nextButton": {
+      "display": ""
+    },
+    "previousButton": {
+      "display": ""
+    },
+    "ed": {
+      "DAY_OF_WEEK": "Monday",
+      "WJ_KPI_COMMENT_XML": "nice staff. manager was very helpfull",
+      "WJ_EMPLOYEE_COMMENT_XML": "i dont know her name but she was the manager. very nice. very helpful."
+    }
+  }
+}

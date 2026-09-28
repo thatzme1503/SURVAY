@@ -1,0 +1,924 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Circle K Survey Data Manager</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            opacity: 0.9;
+            font-size: 1.1em;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            padding: 30px;
+            background: #f8f9fa;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        .stat-card h3 {
+            color: #667eea;
+            font-size: 2em;
+            margin-bottom: 5px;
+        }
+
+        .stat-card p {
+            color: #666;
+            font-size: 0.9em;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .tabs {
+            display: flex;
+            background: #f1f3f4;
+            border-bottom: 2px solid #667eea;
+        }
+
+        .tab {
+            padding: 15px 25px;
+            cursor: pointer;
+            background: none;
+            border: none;
+            font-size: 1em;
+            color: #666;
+            transition: all 0.3s;
+            font-weight: 500;
+        }
+
+        .tab:hover {
+            background: #e9ecef;
+        }
+
+        .tab.active {
+            background: white;
+            color: #667eea;
+            border-bottom: 2px solid #667eea;
+            margin-bottom: -2px;
+        }
+
+        .tab-content {
+            padding: 30px;
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 500;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 1em;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1em;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-right: 10px;
+        }
+
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #c82333;
+        }
+
+        .data-list {
+            max-height: 400px;
+            overflow-y: auto;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            background: #f8f9fa;
+        }
+
+        .data-item {
+            padding: 15px;
+            border-bottom: 1px solid #e9ecef;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .data-item:last-child {
+            border-bottom: none;
+        }
+
+        .data-item .item-content {
+            flex: 1;
+        }
+
+        .data-item .item-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .status-badge {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8em;
+            font-weight: 500;
+        }
+
+        .status-active {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-inactive {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 25px;
+            border-radius: 8px;
+            color: white;
+            font-weight: 500;
+            z-index: 1000;
+            transform: translateX(400px);
+            transition: transform 0.3s;
+        }
+
+        .notification.show {
+            transform: translateX(0);
+        }
+
+        .notification.success {
+            background: #28a745;
+        }
+
+        .notification.error {
+            background: #dc3545;
+        }
+
+        .notification.info {
+            background: #17a2b8;
+        }
+
+        .bulk-import {
+            border: 2px dashed #667eea;
+            padding: 30px;
+            text-align: center;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .bulk-import textarea {
+            width: 100%;
+            height: 150px;
+            margin: 15px 0;
+            font-family: monospace;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔧 Circle K Survey Data Manager</h1>
+            <p>Manage proxies, emails, phones, store numbers, and response data</p>
+        </div>
+
+        <div class="stats-grid" id="stats">
+            <div class="stat-card">
+                <h3 id="proxy-count">0</h3>
+                <p>Active Proxies</p>
+            </div>
+            <div class="stat-card">
+                <h3 id="email-count">0</h3>
+                <p>Available Emails</p>
+            </div>
+            <div class="stat-card">
+                <h3 id="phone-count">0</h3>
+                <p>Available Phones</p>
+            </div>
+            <div class="stat-card">
+                <h3 id="store-count">0</h3>
+                <p>Store Numbers</p>
+            </div>
+            <div class="stat-card">
+                <h3 id="success-count">0</h3>
+                <p>Successful Responses</p>
+            </div>
+            <div class="stat-card">
+                <h3 id="failed-count">0</h3>
+                <p>Failed Responses</p>
+            </div>
+        </div>
+
+        <div class="tabs">
+            <button class="tab active" data-tab="proxies">Proxies</button>
+            <button class="tab" data-tab="emails">Emails</button>
+            <button class="tab" data-tab="phones">Phones</button>
+            <button class="tab" data-tab="names">Names</button>
+            <button class="tab" data-tab="stores">Store Numbers</button>
+            <button class="tab" data-tab="responses">Responses</button>
+            <button class="tab" data-tab="templates">Templates</button>
+            <button class="tab" data-tab="custom">Custom Data</button>
+        </div>
+
+        <div class="tab-content active" id="proxies">
+            <div class="form-group">
+                <label>Add Proxy</label>
+                <input type="text" id="proxy-input" placeholder="http://user:pass@proxy.com:8080">
+                <select id="proxy-category">
+                    <option value="active">Active</option>
+                    <option value="inactive">Inactive</option>
+                    <option value="rotation">Rotation</option>
+                </select>
+                <button class="btn btn-primary" onclick="addProxy()">Add Proxy</button>
+            </div>
+            <div class="bulk-import">
+                <h3>Bulk Import Proxies</h3>
+                <textarea id="proxy-bulk" placeholder="Enter proxies (one per line)"></textarea>
+                <button class="btn btn-secondary" onclick="bulkImportProxies()">Import Proxies</button>
+            </div>
+            <div class="data-list" id="proxy-list"></div>
+        </div>
+
+        <div class="tab-content" id="emails">
+            <div class="form-group">
+                <label>Add Email</label>
+                <input type="email" id="email-input" placeholder="user@example.com">
+                <select id="email-category">
+                    <option value="available">Available</option>
+                    <option value="used">Used</option>
+                </select>
+                <button class="btn btn-primary" onclick="addEmail()">Add Email</button>
+            </div>
+            <div class="bulk-import">
+                <h3>Bulk Import Emails</h3>
+                <textarea id="email-bulk" placeholder="Enter emails (one per line)"></textarea>
+                <button class="btn btn-secondary" onclick="bulkImportEmails()">Import Emails</button>
+            </div>
+            <div class="data-list" id="email-list"></div>
+        </div>
+
+        <div class="tab-content" id="phones">
+            <div class="form-group">
+                <label>Add Phone Number</label>
+                <input type="tel" id="phone-input" placeholder="1234567890">
+                <select id="phone-category">
+                    <option value="available">Available</option>
+                    <option value="used">Used</option>
+                </select>
+                <button class="btn btn-primary" onclick="addPhone()">Add Phone</button>
+            </div>
+            <div class="bulk-import">
+                <h3>Bulk Import Phones</h3>
+                <textarea id="phone-bulk" placeholder="Enter phone numbers (one per line)"></textarea>
+                <button class="btn btn-secondary" onclick="bulkImportPhones()">Import Phones</button>
+            </div>
+            <div class="data-list" id="phone-list"></div>
+        </div>
+
+        <div class="tab-content" id="names">
+            <div class="form-group">
+                <label>Add Name</label>
+                <input type="text" id="name-input" placeholder="John Doe">
+                <select id="name-category">
+                    <option value="fullNames">Full Name</option>
+                    <option value="firstNames">First Name</option>
+                    <option value="lastNames">Last Name</option>
+                </select>
+                <button class="btn btn-primary" onclick="addName()">Add Name</button>
+            </div>
+            <div class="data-list" id="name-list"></div>
+        </div>
+
+        <div class="tab-content" id="stores">
+            <div class="form-group">
+                <label>Add Store Number</label>
+                <input type="text" id="store-input" placeholder="2704123" maxlength="7">
+                <select id="store-category">
+                    <option value="available">Available</option>
+                    <option value="used">Used</option>
+                </select>
+                <button class="btn btn-primary" onclick="addStoreNumber()">Add Store Number</button>
+                <button class="btn btn-secondary" onclick="generateStoreNumber()">Generate Random</button>
+            </div>
+            <div class="bulk-import">
+                <h3>Bulk Import Store Numbers</h3>
+                <textarea id="store-bulk" placeholder="Enter store numbers (one per line)"></textarea>
+                <button class="btn btn-secondary" onclick="bulkImportStores()">Import Store Numbers</button>
+            </div>
+            <div class="data-list" id="store-list"></div>
+        </div>
+
+        <div class="tab-content" id="responses">
+            <div class="form-group">
+                <label>Add Response (JSON)</label>
+                <textarea id="response-input" placeholder='{"storeNumber":"2704123","email":"user@example.com"}'></textarea>
+                <select id="response-category">
+                    <option value="successful">Successful</option>
+                    <option value="failed">Failed</option>
+                </select>
+                <button class="btn btn-primary" onclick="addResponse()">Add Response</button>
+            </div>
+            <div class="data-list" id="response-list"></div>
+        </div>
+
+        <div class="tab-content" id="templates">
+            <div class="form-group">
+                <label>Template Category</label>
+                <select id="template-category">
+                    <option value="contactInfo">Contact Info</option>
+                    <option value="consent">Consent</option>
+                    <option value="storeNumber">Store Number</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Template Data (JSON)</label>
+                <textarea id="template-input" placeholder='{"key":"value"}'></textarea>
+                <button class="btn btn-primary" onclick="setTemplate()">Set Template</button>
+            </div>
+            <div class="data-list" id="template-list"></div>
+        </div>
+
+        <div class="tab-content" id="custom">
+            <div class="form-group">
+                <label>Key</label>
+                <input type="text" id="custom-key" placeholder="custom_key">
+            </div>
+            <div class="form-group">
+                <label>Value</label>
+                <input type="text" id="custom-value" placeholder="custom_value">
+            </div>
+            <button class="btn btn-primary" onclick="setCustomData()">Set Custom Data</button>
+            <div class="data-list" id="custom-list"></div>
+        </div>
+    </div>
+
+    <div class="notification" id="notification"></div>
+
+    <script>
+        // Tab switching
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                tab.classList.add('active');
+                document.getElementById(tab.dataset.tab).classList.add('active');
+                loadData(tab.dataset.tab);
+            });
+        });
+
+        // Load statistics on page load
+        loadStats();
+        setInterval(loadStats, 30000); // Refresh every 30 seconds
+
+        // Load initial data
+        loadData('proxies');
+
+        async function loadStats() {
+            try {
+                const response = await fetch('/api/stats');
+                const stats = await response.json();
+                
+                document.getElementById('proxy-count').textContent = stats.proxies.active;
+                document.getElementById('email-count').textContent = stats.emails.available;
+                document.getElementById('phone-count').textContent = stats.phones.available;
+                document.getElementById('store-count').textContent = stats.storeNumbers.available;
+                document.getElementById('success-count').textContent = stats.responses.successful;
+                document.getElementById('failed-count').textContent = stats.responses.failed;
+            } catch (error) {
+                console.error('Error loading stats:', error);
+            }
+        }
+
+        async function loadData(category) {
+            try {
+                const response = await fetch(`/api/data/${category}`);
+                const data = await response.json();
+                renderDataList(category, data);
+            } catch (error) {
+                console.error(`Error loading ${category}:`, error);
+            }
+        }
+
+        function renderDataList(category, data) {
+            const listElement = document.getElementById(`${category === 'stores' ? 'store' : category}-list`);
+            if (!listElement) return;
+
+            listElement.innerHTML = '';
+
+            if (Array.isArray(data)) {
+                data.forEach((item, index) => {
+                    const itemDiv = document.createElement('div');
+                    itemDiv.className = 'data-item';
+                    itemDiv.innerHTML = `
+                        <div class="item-content">${item}</div>
+                        <div class="item-actions">
+                            <button class="btn btn-danger" onclick="removeItem('${category}', ${index})">Remove</button>
+                        </div>
+                    `;
+                    listElement.appendChild(itemDiv);
+                });
+            } else if (typeof data === 'object') {
+                Object.entries(data).forEach(([key, value]) => {
+                    if (Array.isArray(value)) {
+                        value.forEach((item, index) => {
+                            const itemDiv = document.createElement('div');
+                            itemDiv.className = 'data-item';
+                            itemDiv.innerHTML = `
+                                <div class="item-content">
+                                    <span class="status-badge status-${key}">${key}</span>
+                                    ${item}
+                                </div>
+                                <div class="item-actions">
+                                    <button class="btn btn-danger" onclick="removeItem('${category}', '${key}', ${index})">Remove</button>
+                                </div>
+                            `;
+                            listElement.appendChild(itemDiv);
+                        });
+                    } else {
+                        const itemDiv = document.createElement('div');
+                        itemDiv.className = 'data-item';
+                        itemDiv.innerHTML = `
+                            <div class="item-content">
+                                <strong>${key}:</strong> ${JSON.stringify(value)}
+                            </div>
+                        `;
+                        listElement.appendChild(itemDiv);
+                    }
+                });
+            }
+        }
+
+        async function addProxy() {
+            const proxy = document.getElementById('proxy-input').value;
+            const category = document.getElementById('proxy-category').value;
+            
+            if (!proxy) {
+                showNotification('Please enter a proxy', 'error');
+                return;
+            }
+
+            try {
+                const response = await fetch(`/api/data/proxies`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ action: 'add', item: proxy, subCategory: category })
+                });
+                const result = await response.json();
+                
+                if (result.success) {
+                    showNotification(result.message, 'success');
+                    document.getElementById('proxy-input').value = '';
+                    loadData('proxies');
+                    loadStats();
+                } else {
+                    showNotification(result.message, 'error');
+                }
+            } catch (error) {
+                showNotification('Error adding proxy', 'error');
+            }
+        }
+
+        async function addEmail() {
+            const email = document.getElementById('email-input').value;
+            const category = document.getElementById('email-category').value;
+            
+            if (!email) {
+                showNotification('Please enter an email', 'error');
+                return;
+            }
+
+            try {
+                const response = await fetch(`/api/data/emails`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ action: 'add', item: email, subCategory: category })
+                });
+                const result = await response.json();
+                
+                if (result.success) {
+                    showNotification(result.message, 'success');
+                    document.getElementById('email-input').value = '';
+                    loadData('emails');
+                    loadStats();
+                } else {
+                    showNotification(result.message, 'error');
+                }
+            } catch (error) {
+                showNotification('Error adding email', 'error');
+            }
+        }
+
+        async function addPhone() {
+            const phone = document.getElementById('phone-input').value;
+            const category = document.getElementById('phone-category').value;
+            
+            if (!phone) {
+                showNotification('Please enter a phone number', 'error');
+                return;
+            }
+
+            try {
+                const response = await fetch(`/api/data/phones`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ action: 'add', item: phone, subCategory: category })
+                });
+                const result = await response.json();
+                
+                if (result.success) {
+                    showNotification(result.message, 'success');
+                    document.getElementById('phone-input').value = '';
+                    loadData('phones');
+                    loadStats();
+                } else {
+                    showNotification(result.message, 'error');
+                }
+            } catch (error) {
+                showNotification('Error adding phone', 'error');
+            }
+        }
+
+        async function addName() {
+            const name = document.getElementById('name-input').value;
+            const category = document.getElementById('name-category').value;
+            
+            if (!name) {
+                showNotification('Please enter a name', 'error');
+                return;
+            }
+
+            try {
+                const response = await fetch(`/api/data/names`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ action: 'add', item: name, subCategory: category })
+                });
+                const result = await response.json();
+                
+                if (result.success) {
+                    showNotification(result.message, 'success');
+                    document.getElementById('name-input').value = '';
+                    loadData('names');
+                } else {
+                    showNotification(result.message, 'error');
+                }
+            } catch (error) {
+                showNotification('Error adding name', 'error');
+            }
+        }
+
+        async function addStoreNumber() {
+            const store = document.getElementById('store-input').value;
+            const category = document.getElementById('store-category').value;
+            
+            if (!store) {
+                showNotification('Please enter a store number', 'error');
+                return;
+            }
+
+            try {
+                const response = await fetch(`/api/data/storeNumbers`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ action: 'add', item: store, subCategory: category })
+                });
+                const result = await response.json();
+                
+                if (result.success) {
+                    showNotification(result.message, 'success');
+                    document.getElementById('store-input').value = '';
+                    loadData('stores');
+                    loadStats();
+                } else {
+                    showNotification(result.message, 'error');
+                }
+            } catch (error) {
+                showNotification('Error adding store number', 'error');
+            }
+        }
+
+        function generateStoreNumber() {
+            const prefixes = ['270', '271', '272', '273', '274', '275'];
+            const prefix = prefixes[Math.floor(Math.random() * prefixes.length)];
+            const suffix = Math.floor(1000 + Math.random() * 9000);
+            const storeNumber = `${prefix}${suffix}`;
+            document.getElementById('store-input').value = storeNumber;
+        }
+
+        async function addResponse() {
+            const responseText = document.getElementById('response-input').value;
+            const category = document.getElementById('response-category').value;
+            
+            if (!responseText) {
+                showNotification('Please enter response data', 'error');
+                return;
+            }
+
+            try {
+                const response = await fetch(`/api/data/responses`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ action: 'add', item: responseText, subCategory: category })
+                });
+                const result = await response.json();
+                
+                if (result.success) {
+                    showNotification(result.message, 'success');
+                    document.getElementById('response-input').value = '';
+                    loadData('responses');
+                    loadStats();
+                } else {
+                    showNotification(result.message, 'error');
+                }
+            } catch (error) {
+                showNotification('Error adding response', 'error');
+            }
+        }
+
+        async function setTemplate() {
+            const category = document.getElementById('template-category').value;
+            const templateText = document.getElementById('template-input').value;
+            
+            if (!templateText) {
+                showNotification('Please enter template data', 'error');
+                return;
+            }
+
+            try {
+                const template = JSON.parse(templateText);
+                const response = await fetch(`/api/data/templates`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ action: 'set', item: template, subCategory: category })
+                });
+                const result = await response.json();
+                
+                if (result.success) {
+                    showNotification(result.message, 'success');
+                    document.getElementById('template-input').value = '';
+                    loadData('templates');
+                } else {
+                    showNotification(result.message, 'error');
+                }
+            } catch (error) {
+                showNotification('Invalid JSON format', 'error');
+            }
+        }
+
+        async function setCustomData() {
+            const key = document.getElementById('custom-key').value;
+            const value = document.getElementById('custom-value').value;
+            
+            if (!key || !value) {
+                showNotification('Please enter key and value', 'error');
+                return;
+            }
+
+            try {
+                const response = await fetch(`/api/data/custom`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ action: 'set', item: value, subCategory: key })
+                });
+                const result = await response.json();
+                
+                if (result.success) {
+                    showNotification(result.message, 'success');
+                    document.getElementById('custom-key').value = '';
+                    document.getElementById('custom-value').value = '';
+                    loadData('custom');
+                } else {
+                    showNotification(result.message, 'error');
+                }
+            } catch (error) {
+                showNotification('Error setting custom data', 'error');
+            }
+        }
+
+        async function removeItem(category, subCategory, index) {
+            try {
+                const response = await fetch(`/api/data/${category}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ action: 'remove', item: index, subCategory: subCategory })
+                });
+                const result = await response.json();
+                
+                if (result.success) {
+                    showNotification(result.message, 'success');
+                    loadData(category);
+                    loadStats();
+                } else {
+                    showNotification(result.message, 'error');
+                }
+            } catch (error) {
+                showNotification('Error removing item', 'error');
+            }
+        }
+
+        async function bulkImportProxies() {
+            const bulkText = document.getElementById('proxy-bulk').value;
+            const proxies = bulkText.split('\n').filter(p => p.trim());
+            
+            try {
+                const response = await fetch('/api/bulk/proxies', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ items: proxies })
+                });
+                const result = await response.json();
+                
+                if (result.success) {
+                    showNotification(result.message, 'success');
+                    document.getElementById('proxy-bulk').value = '';
+                    loadData('proxies');
+                    loadStats();
+                } else {
+                    showNotification(result.message, 'error');
+                }
+            } catch (error) {
+                showNotification('Error importing proxies', 'error');
+            }
+        }
+
+        async function bulkImportEmails() {
+            const bulkText = document.getElementById('email-bulk').value;
+            const emails = bulkText.split('\n').filter(e => e.trim());
+            
+            try {
+                const response = await fetch('/api/bulk/emails', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ items: emails })
+                });
+                const result = await response.json();
+                
+                if (result.success) {
+                    showNotification(result.message, 'success');
+                    document.getElementById('email-bulk').value = '';
+                    loadData('emails');
+                    loadStats();
+                } else {
+                    showNotification(result.message, 'error');
+                }
+            } catch (error) {
+                showNotification('Error importing emails', 'error');
+            }
+        }
+
+        async function bulkImportPhones() {
+            const bulkText = document.getElementById('phone-bulk').value;
+            const phones = bulkText.split('\n').filter(p => p.trim());
+            
+            try {
+                const response = await fetch('/api/bulk/phones', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ items: phones })
+                });
+                const result = await response.json();
+                
+                if (result.success) {
+                    showNotification(result.message, 'success');
+                    document.getElementById('phone-bulk').value = '';
+                    loadData('phones');
+                    loadStats();
+                } else {
+                    showNotification(result.message, 'error');
+                }
+            } catch (error) {
+                showNotification('Error importing phones', 'error');
+            }
+        }
+
+        async function bulkImportStores() {
+            const bulkText = document.getElementById('store-bulk').value;
+            const stores = bulkText.split('\n').filter(s => s.trim());
+            
+            try {
+                const response = await fetch('/api/bulk/storeNumbers', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ items: stores })
+                });
+                const result = await response.json();
+                
+                if (result.success) {
+                    showNotification(result.message, 'success');
+                    document.getElementById('store-bulk').value = '';
+                    loadData('stores');
+                    loadStats();
+                } else {
+                    showNotification(result.message, 'error');
+                }
+            } catch (error) {
+                showNotification('Error importing store numbers', 'error');
+            }
+        }
+
+        function showNotification(message, type) {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.className = `notification ${type} show`;
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+        }
+    </script>
+</body>
+</html>
